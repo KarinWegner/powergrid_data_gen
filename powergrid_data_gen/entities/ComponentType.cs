@@ -25,11 +25,11 @@ namespace powergrid_data_gen.entities
     }
     public class ComponentLogData
     {
-        public DateTime timeStamp;
+        public DateTime timestamp;
 
         public ComponentLogData(DateTime timeStamp)
         {
-            this.timeStamp = timeStamp;
+            this.timestamp = timeStamp;
         }
     }
 }

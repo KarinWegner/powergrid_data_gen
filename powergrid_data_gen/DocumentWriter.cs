@@ -25,7 +25,8 @@ namespace powergrid_data_gen
 
     public static class DocumentWriter
     {
-        public static async Task GenerateFiles() {
+        
+        public static async Task GenerateFiles(DocWriter docWriter) {
 
             var Data = await SeedData.GetLogList();
            
@@ -38,14 +39,14 @@ namespace powergrid_data_gen
             }
             List<string> errors = new List<string>();
 
+            string jsonData = docWriter.JsonWriter(Data);
 
-
-            string jsonData = JsonConvert.SerializeObject(Data, Formatting.Indented);
+          //  string jsonData = JsonConvert.SerializeObject(Data, Formatting.Indented);
             // Write the JSON string to a file
             //  File.WriteAllText(filePath, jsonData);
 
             string csvfilePath = "C:\\Users\\karin\\source\\repos\\powergrid_data_gen\\powergrid_data_gen\\documents\\log_output.csv";
-            CsvWriter.WriteLogObjectToCsv(Data, csvfilePath);
+           // DocWriter.WriteLogObjectToCsv(Data, csvfilePath);
 
             Console.WriteLine("JSON file created at: " + filePath);
             Console.WriteLine(jsonData);
@@ -65,34 +66,34 @@ public class DocWriter
             string json = System.Text.Json.JsonSerializer.Serialize(Data, options);
             return json;
         }
-        public static void WriteLogObjectToCsv(List<LogObject> logList, string filePath)
-        {
-            if (logList == null || logList.Count == 0)
-                throw new ArgumentException("Log list is empty or null."); 
+        //public static void WriteLogObjectToCsv(List<LogObject> logList, string filePath)
+        //{
+        //    if (logList == null || logList.Count == 0)
+        //        throw new ArgumentException("Log list is empty or null."); 
 
 
-            var sb = new StringBuilder();
+        //    var sb = new StringBuilder();
 
-            // CSV Header
-            foreach (var logObject in logList)
-            {
-                if (logObject.component?.loggedData == null)
-                    continue; // Skip if there's no log data
+        //    // CSV Header
+        //    foreach (var logObject in logList)
+        //    {
+        //        if (logObject.component?.loggedData == null)
+        //            continue; // Skip if there's no log data
 
-                foreach (var log in logObject.component.loggedData)
-                {
-                    sb.AppendLine($"{logObject.LogStart:yyyy-MM-dd HH:mm:ss},{logObject.LogEnd:yyyy-MM-dd HH:mm:ss}," +
-                                  $"{logObject.component.spec?.component_id}, {logObject.component.spec?.length_km},{logObject.component.spec?.current_capacity},{logObject.component.spec?.max_operating_temperature}," +
-                                  $"{logObject.component.spec?.conductor_material},{logObject.component.spec?.line_type},{logObject.component.spec?.insulation_type}," +
-                                  $"{log.timestamp:yyyy-MM-dd HH:mm:ss},{log.power_capacity},{log.line_voltage}");
-                }
-            }
+        //        foreach (var log in logObject.component.loggedData)
+        //        {
+        //            sb.AppendLine($"{logObject.LogStart:yyyy-MM-dd HH:mm:ss},{logObject.LogEnd:yyyy-MM-dd HH:mm:ss}," +
+        //                          $"{logObject.component.spec?.component_id}, {logObject.component.spec?.length_km},{logObject.component.spec?.current_capacity},{logObject.component.spec?.max_operating_temperature}," +
+        //                          $"{logObject.component.spec?.conductor_material},{logObject.component.spec?.line_type},{logObject.component.spec?.insulation_type}," +
+        //                          $"{log.timestamp:yyyy-MM-dd HH:mm:ss},{log.power_capacity},{log.line_voltage}");
+        //        }
+        //    }
 
-            // Write to CSV file
-            File.WriteAllText(filePath, sb.ToString());
+        //    // Write to CSV file
+        //    File.WriteAllText(filePath, sb.ToString());
 
-            Console.WriteLine("CSV file successfully written!");
-        }
+        //    Console.WriteLine("CSV file successfully written!");
+        //}
 
     }
 }

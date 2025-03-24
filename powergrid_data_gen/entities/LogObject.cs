@@ -11,11 +11,11 @@ namespace powergrid_data_gen.entities
         public DateTime LogStart;
         public DateTime LogEnd;
 
-        public ComponentPowerline component;
+        public ComponentType component;
 
-        public LogObject(DateTime start, DateTime end, ComponentPowerline cpow)
+        public LogObject(DateTime start, DateTime end, ComponentType ct)
         {
-                component= cpow;
+            component= ct;
             LogStart = start;
             LogEnd =end;
         }

@@ -59,30 +59,29 @@ namespace powergrid_data_gen.Generator
         public static async Task<ComponentPowerline> GeneratePowerlineComponent(DateTime startDate, DateTime endDate)
         {
             PowerlineSpecification spec = await GeneratePowerlineSpecification();
-            List<PowerlineLogData> log = await GenerateLogData(startDate, endDate, spec.length_km);
+            List<ComponentLogData> log = await GenerateLogData(startDate, endDate, spec.length_km);
             return new ComponentPowerline(spec, log);
         }
 
-        private static async Task<List<PowerlineLogData>> GenerateLogData(DateTime start, DateTime end, double? length_km)
+        private static async Task<List<ComponentLogData>> GenerateLogData(DateTime start, DateTime end, double? length_km)
         {
             string length_category = await Categorize_Length(length_km);
             double numberofDays = (end-start).TotalDays;
             Console.WriteLine($"startDate: "+start);
             Console.WriteLine($"endDate: "+end);
             Console.WriteLine($"number of days: "+numberofDays);
-                List<PowerlineLogData> logBook= new List<PowerlineLogData>();
+                List<ComponentLogData> logBook= new List<ComponentLogData>();
             
                 DateTime logTime = start;
             for (int i = 0; i < numberofDays; i++)
             {
                 for (int j = 0; j < 24; j++)
                 {
-                    PowerlineLogData hourLog = new PowerlineLogData
-                    {
-                        timestamp = logTime,
-                       line_voltage = (double?)await GetRandomizedComponent(length_category, "voltage"),
-                        power_capacity = (double?)await GetRandomizedComponent(length_category, "power")
-                    };
+
+                    double? line_voltage = (double?)await GetRandomizedComponent(length_category, "voltage");
+                    double? power_capacity = (double?)await GetRandomizedComponent(length_category, "power");
+                    PowerlineLogData hourLog = new PowerlineLogData(logTime, line_voltage, power_capacity);
+
                     logTime += TimeSpan.FromHours(1);
                     logBook.Add(hourLog);
                 }

@@ -9,17 +9,13 @@ namespace powergrid_data_gen.entities
     public class ComponentPowerline : ComponentType
     {
        
-        public PowerlineSpecification spec;
-        public List<PowerlineLogData> loggedData;
         public static readonly List<string> datasetParams =
             new List<string>{
                 "power_capacity, powercapacity",
                 "line_voltage, linevoltage"};
 
-        public ComponentPowerline(PowerlineSpecification spec, List<PowerlineLogData> datalog) : base (spec,datalog)
+        public ComponentPowerline(PowerlineSpecification spec, List<ComponentLogData> datalog) : base (spec,datalog)
         {
-            this.spec = spec;
-            loggedData=datalog;
         }
     }
 
@@ -38,12 +34,12 @@ namespace powergrid_data_gen.entities
 
     public class PowerlineLogData : ComponentLogData
     {
-        public PowerlineLogData(DateTime time, double? powcap, double? linevol) : base(time)
-        {
-                
-        }
-        public DateTime timestamp;
         public double? power_capacity;
         public double? line_voltage;
+        public PowerlineLogData(DateTime timestamp, double? powcap, double? linevol) : base(timestamp)
+        {
+            power_capacity = powcap;
+            line_voltage = linevol;
+        }
     }
 }
