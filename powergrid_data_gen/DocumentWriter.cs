@@ -41,7 +41,7 @@ namespace powergrid_data_gen
 
             string jsonData = JsonConvert.SerializeObject(Data, Formatting.Indented);
             // Write the JSON string to a file
-            //  File.WriteAllText(filePath, jsonData);
+             File.WriteAllText(filePath, jsonData);
 
             string csvfilePath = "C:\\Users\\karin\\source\\repos\\powergrid_data_gen\\powergrid_data_gen\\documents\\log_output.csv";
             CsvWriter.WriteLogObjectToCsv(Data, csvfilePath);
