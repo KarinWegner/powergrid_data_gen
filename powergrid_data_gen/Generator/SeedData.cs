@@ -98,7 +98,7 @@ namespace powergrid_data_gen.Generator
             double? length_km = _random.Next(40, 1000);
             string length_category = await Categorize_Length(length_km);
             double? current_capacity = (double?)await GetRandomizedComponent(length_category, "currentcapacity");
-            double? max_operating_temperature = (double?)await GetRandomizedComponent(length_category, "maxoperatingtemperature");
+            int? max_operating_temperature = Convert.ToInt32(await GetRandomizedComponent(length_category, "maxoperatingtemperature"));
             string? conductor_material = (string)await GetRandomizedComponent(length_category, "conductormaterial");
             string? line_type = (string)await GetRandomizedComponent(length_category, "linetype");
             string? insulation_type = (string)await GetRandomizedComponent(length_category, "insulationtype");

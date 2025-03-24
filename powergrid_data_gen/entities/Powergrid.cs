@@ -29,7 +29,7 @@ namespace powergrid_data_gen.entities
         public string? component_id;
         public double? length_km;
         public double? current_capacity;
-        public double? max_operating_temperature;
+        public int? max_operating_temperature;
         public string? conductor_material;
         public string? line_type;
         public string? insulation_type;
