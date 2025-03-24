@@ -6,7 +6,7 @@ namespace powergrid_data_gen
     {
         static async Task Main(string[] args)
         {
-            await DocumentWriter.SerializeJson();
+            await DocumentWriter.GenerateFiles();
             
             Console.WriteLine("press any key to exit");
             Console.ReadKey();

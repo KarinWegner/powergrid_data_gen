@@ -25,7 +25,7 @@ namespace powergrid_data_gen
 
     public static class DocumentWriter
     {
-        public static async Task SerializeJson() {
+        public static async Task GenerateFiles() {
 
             var Data = await SeedData.GetLogList();
            
@@ -37,7 +37,8 @@ namespace powergrid_data_gen
                 Directory.CreateDirectory(folderPath);
             }
             List<string> errors = new List<string>();
-    
+
+
 
             string jsonData = JsonConvert.SerializeObject(Data, Formatting.Indented);
             // Write the JSON string to a file
@@ -52,8 +53,18 @@ namespace powergrid_data_gen
 
     }
 
-public class CsvWriter
+public class DocWriter
     {
+        public  string JsonWriter(List<LogObject> Data)
+    {
+
+            var options = new JsonSerializerOptions();
+            options.Converters.Add(new ObjectConverter<ComponentType>());
+            options.Converters.Add(new ObjectConverter<ComponentSpecification>());
+            options.Converters.Add(new ObjectConverter<ComponentLogData>());
+            string json = System.Text.Json.JsonSerializer.Serialize(Data, options);
+            return json;
+        }
         public static void WriteLogObjectToCsv(List<LogObject> logList, string filePath)
         {
             if (logList == null || logList.Count == 0)
@@ -82,5 +93,6 @@ public class CsvWriter
 
             Console.WriteLine("CSV file successfully written!");
         }
+
     }
 }
