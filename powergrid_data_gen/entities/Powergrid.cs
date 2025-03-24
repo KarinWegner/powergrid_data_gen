@@ -23,7 +23,7 @@ namespace powergrid_data_gen.entities
         }
     }
 
-    public class PowerlineSpecification 
+    public class PowerlineSpecification :ComponentSpecification
     {
 
         public string? component_id;
@@ -35,11 +35,44 @@ namespace powergrid_data_gen.entities
         public string? insulation_type; //"Defines durability and breakdown voltage"
 
     }
-
-    public class PowerlineLogData
+    public class PowerlineLogData : LoggedData
     {
         public DateTime timestamp;
         public double? power_capacity; //Defines total power the line can transmit"
         public double? line_voltage; //"Defines the transmission level"
+    }
+    public class ComponentTransformer
+    {
+        public TransformerSpecification spec;
+        public List<TransformerLogData> loggedData;
+        public static readonly List<string> datasetParams =
+            new List<string>{
+                "power_capacity, powercapacity",
+                "line_voltage, linevoltage"};
+
+        public ComponentTransformer(TransformerSpecification spec, List<TransformerLogData> datalog)
+        {
+            this.spec = spec;
+            loggedData = datalog;
+        }
+    }
+    public class TransformerSpecification
+    {
+        double? power_rating; //"Defines maximum load capacity"
+        int? primary_voltage; // "Input voltage level")
+        int? secondary_voltage; //"Output voltage level")
+        int? frequency;         //"Hz")
+        string? coolingtype; //"The cooling method the transformer uses. Decides temperaturerise"
+        int? temperaturerise; //"Determines safe operating temperature")
+    }
+
+    public class TransformerLogData 
+    {
+        public DateTime timestamp;
+        public double? load_current;
+        public double? power_factor;
+        public double? active_power;
+        public double? reactive_power;
+
     }
 }
