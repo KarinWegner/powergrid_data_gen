@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace powergrid_data_gen.entities
 {
-    public class ComponentPowerline
+    public class ComponentPowerline : ComponentType
     {
        
         public PowerlineSpecification spec;
@@ -16,14 +16,14 @@ namespace powergrid_data_gen.entities
                 "power_capacity, powercapacity",
                 "line_voltage, linevoltage"};
 
-        public ComponentPowerline(PowerlineSpecification spec, List<PowerlineLogData> datalog) 
+        public ComponentPowerline(PowerlineSpecification spec, List<PowerlineLogData> datalog) : base (spec,datalog)
         {
             this.spec = spec;
             loggedData=datalog;
         }
     }
 
-    public class PowerlineSpecification 
+    public class PowerlineSpecification :ComponentSpecification
     {
 
         public string? component_id;
@@ -36,8 +36,12 @@ namespace powergrid_data_gen.entities
 
     }
 
-    public class PowerlineLogData
+    public class PowerlineLogData : ComponentLogData
     {
+        public PowerlineLogData(DateTime time, double? powcap, double? linevol) : base(time)
+        {
+                
+        }
         public DateTime timestamp;
         public double? power_capacity;
         public double? line_voltage;

@@ -11,8 +11,8 @@ namespace powergrid_data_gen.entities
     public class ComponentType
     {
         ComponentSpecification specData;
-        List<string> loggedData; //List of the data that is logged hourly
-        public ComponentType(ComponentSpecification spec, List<string> log)
+        List<ComponentLogData> loggedData; //List of the data that is logged hourly
+        public ComponentType(ComponentSpecification spec, List<ComponentLogData> log)
         {
             specData = spec;
             loggedData = log;
@@ -23,8 +23,13 @@ namespace powergrid_data_gen.entities
     {
 
     }
-    public class LoggedData
+    public class ComponentLogData
     {
-        
+        public DateTime timeStamp;
+
+        public ComponentLogData(DateTime timeStamp)
+        {
+            this.timeStamp = timeStamp;
+        }
     }
 }
