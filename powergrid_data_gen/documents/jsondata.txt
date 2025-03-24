@@ -1,0 +1,15 @@
+{
+  "LogStart": "0001-01-01T00:00:00",
+  "LogEnd": "0001-01-01T00:00:00",
+  "component": {
+    "spec": {
+      "length_km": 651.0,
+      "current_capacity": 1827.3530734190895,
+      "max_operating_temperature": 132.02021460370474,
+      "conductor_material": "aluminium",
+      "line_type": "underground",
+      "insulation_type": "composite"
+    },
+    "loggedData": []
+  }
+}
