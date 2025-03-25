@@ -25,12 +25,12 @@ namespace powergrid_data_gen
 
     public static class DocumentWriter
     {
-        public static async Task SerializeJson() {
+        public static async Task Run() {
 
             var Data = await SeedData.GetLogList();
            
 
-            string folderPath = "C:\\Users\\karin\\source\\repos\\powergrid_data_gen\\powergrid_data_gen\\documents\\"; // Replace with the folder path you want
+            string folderPath = "C:\\Users\\karin\\source\\repos\\powergrid_data_gen\\powergrid_data_gen\\Generated_Data\\"; // Replace with the folder path you want
             string filePath = Path.Combine(folderPath, "jsondata.txt");
             if (!Directory.Exists(folderPath))
             {
@@ -46,8 +46,8 @@ namespace powergrid_data_gen
             string csvfilePath = "C:\\Users\\karin\\source\\repos\\powergrid_data_gen\\powergrid_data_gen\\documents\\";
             CsvWriter.WriteLogObjectToCsv(Data, csvfilePath);
 
-            Console.WriteLine("JSON file created at: " + filePath);
-            Console.WriteLine(jsonData);
+            Console.WriteLine("Generated date created at: " + filePath);
+           
         }
 
     }

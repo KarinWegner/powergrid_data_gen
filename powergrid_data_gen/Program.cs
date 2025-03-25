@@ -6,9 +6,10 @@ namespace powergrid_data_gen
     {
         static async Task Main(string[] args)
         {
-            await DocumentWriter.SerializeJson();
-            
-            Console.WriteLine("press any key to exit");
+
+            await DocumentWriter.Run();
+
+            Console.WriteLine("Press any key to exit:");
             Console.ReadKey();
         }
     }
