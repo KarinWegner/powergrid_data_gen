@@ -6,18 +6,38 @@ using System.Threading.Tasks;
 
 namespace powergrid_data_gen.entities
 {
-    public class LogObject
+
+
+    public abstract class LogObject 
     {
         public DateTime LogStart;
         public DateTime LogEnd;
 
-        public ComponentPowerline component;
-
-        public LogObject(DateTime start, DateTime end, ComponentPowerline cpow)
+        protected LogObject(DateTime logStart, DateTime logEnd)
         {
-                component= cpow;
-            LogStart = start;
-            LogEnd =end;
+            LogStart = logStart;
+            LogEnd = logEnd;
         }
     }
+    public class TransformerLogObject: LogObject
+    {
+        public ComponentTransformer component;
+
+
+        public TransformerLogObject(DateTime start, DateTime end, ComponentTransformer cpow) : base(start, end)
+        {
+            component = cpow;
+        }
+    }
+    public class PowerlineLogObject : LogObject
+    {
+
+        public ComponentPowerline component;
+
+        public PowerlineLogObject(DateTime start, DateTime end,ComponentPowerline cpow) :base(start,end)
+        {
+            component = cpow;
+        }
+    }
+
 }
