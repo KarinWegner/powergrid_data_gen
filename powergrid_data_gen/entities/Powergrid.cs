@@ -27,6 +27,7 @@ namespace powergrid_data_gen.entities
     {
 
         public string? component_id;
+        public string component_type = "powerline";
         public double? length_km; //"The length of the powerline in kilometres"
         public double? current_capacity; //Defines max current capacity
         public int? max_operating_temperature; //"The heat tolerance in Celsius before degredation occurs"
@@ -58,20 +59,21 @@ namespace powergrid_data_gen.entities
     }
     public class TransformerSpecification
     {
-        public string? serial_number;
-        public double? power_rating; //"Defines maximum load capacity"
-        public int? primary_voltage; // "Input voltage level")
-        public int? secondary_voltage; //"Output voltage level")
-        public int? frequency;         //"Hz")
-        public string? coolingtype; //"The cooling method the transformer uses. Decides temperaturerise"
-        public int? temperaturerise; //"Determines safe operating temperature")
+        public string? component_id;
+        public string component_type = "transformer";
+        public double? power_rating;      //"Defines maximum load capacity"
+        public int?    primary_voltage;   // "Input voltage level")
+        public int?    secondary_voltage; //"Output voltage level")
+        public int?    frequency;         //"Hz")
+        public string? cooling_type;      //"The cooling method the transformer uses. Decides temperaturerise"
+        public int?    temperature_rise; //"Determines safe operating temperature")
     }
 
     public class TransformerLogData 
     {
         public DateTime timestamp;
         public double? load_current;
-        public double? current_temperature;
+        public double? temperature;
         public double? power_factor;
         public double? active_power;
         public double? reactive_power;

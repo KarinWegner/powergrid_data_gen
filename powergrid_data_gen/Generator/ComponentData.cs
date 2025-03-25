@@ -9,34 +9,6 @@ namespace powergrid_data_gen.Generator
     public static class ComponentData
     {
 
-        public static readonly Dictionary<string, List<string>> textbasedData =
-            new Dictionary<string, List<string>>()
-            {
-                {
-                    "conductormaterial", new List<string>
-                    {
-                        "aluminium",
-                        "copper"
-                    }
-                },
-                {
-                    "linetype", new List<string>
-                    {
-                        "underground",
-                        "overhead"
-                    }
-                },
-                {
-                    "insulationtype", new List<string>
-                    {
-                        "XLPE",
-                        "composite",
-                        "EPR",
-                        "PVC"
-                    }
-                }
-            };
-
         public static readonly Dictionary<string, Dictionary<string,
             (double Min, double Max)>> powerlineData =
        new Dictionary<string, Dictionary<string, (double, double)>>()
@@ -134,9 +106,37 @@ namespace powergrid_data_gen.Generator
                 }
            }
        };
+        public static readonly Dictionary<string, List<string>> textbasedPowerlineData =
+            new Dictionary<string, List<string>>()
+            {
+                {
+                    "conductormaterial", new List<string>
+                    {
+                        "aluminium",
+                        "copper"
+                    }
+                },
+                {
+                    "linetype", new List<string>
+                    {
+                        "underground",
+                        "overhead"
+                    }
+                },
+                {
+                    "insulationtype", new List<string>
+                    {
+                        "XLPE",
+                        "composite",
+                        "EPR",
+                        "PVC"
+                    }
+                }
+            };
+
 
         public static readonly Dictionary<string, Dictionary<string,
-            List<string>>> textbasedPowerData =
+            List<string>>> textbasedTransformerData =
        new Dictionary<string, Dictionary<string, List<string>>>()
        {
            { "low_voltage", new Dictionary<string, List<string>>

@@ -15,43 +15,54 @@ namespace powergrid_data_gen.Generator
     public static class SeedData
     {
         private static readonly Random _random = new Random();
+        private static readonly int[] frequency_level = new int[2] {50, 60};
 
         public static async Task<List<LogObject>> GetLogList()
         {
             List<LogObject> LogList = new List<LogObject>();
             for (int i = 0; i < 3; i++)
             {
-            LogObject logObject = await GenerateLogObject();
-                LogList.Add(logObject);
+                if (_random.Next(0, 10) < 5)
+                {
+                    TransformerLogObject? logObject = (TransformerLogObject?)await GenerateLogObject("transformer");
+                    if (logObject == null)
+                        continue;
+                    LogList.Add(logObject);
+                }
+
+                else
+                {
+                    PowerlineLogObject? logObject = (PowerlineLogObject?)await GenerateLogObject("powerline");
+                    if (logObject == null)
+                        continue;
+                    LogList.Add(logObject);
+                }
+                             
             }
             return LogList;
         }
-        //public static async Task<ComponentPowerline> GenerateComponent()
-        //{
-           
-        ////Select component type
-        ////ToDo: Add transformer
 
-        ////int randNumb = rnd.Next(0, 10);
-        ////if (randNumb > 5)
-        ////{
-
-        //    //}
-        //    //else
-        //    //{
-        //    //    component = new Powerline(); //ToDo: Change to Transformer
-        //    //}
-        //    //return component;
-        //}
-
-        public static async Task<LogObject> GenerateLogObject()
+        public static async Task<LogObject?> GenerateLogObject(string componentType)
         {
-            DateTime startDate = new DateTime(2025, 3, 15, 0, 0, 0) - TimeSpan.FromDays(5);
-            DateTime endDate = startDate + TimeSpan.FromDays(_random.Next(2, 5));
+            DateTime startDate = new DateTime(2025, 3, 15, 0, 0, 0);
+            DateTime endDate = startDate + TimeSpan.FromDays(_random.Next(5, 10));
 
+            if (componentType == "transformer")
+            {
+            ComponentTransformer component = await GenerateTransformerComponent(startDate, endDate);
+            return new TransformerLogObject(startDate, endDate, component);
 
-            ComponentPowerline component = await GeneratePowerlineComponent(startDate, endDate);
-            return new LogObject(startDate, endDate, component);
+            }
+            else if (componentType == "powerline")
+            {
+                ComponentPowerline component = await GeneratePowerlineComponent(startDate, endDate);
+                return new PowerlineLogObject(startDate, endDate, component);
+
+            }
+            else
+            {
+                return null;
+            }
 
 
         }
@@ -59,20 +70,58 @@ namespace powergrid_data_gen.Generator
         public static async Task<ComponentPowerline> GeneratePowerlineComponent(DateTime startDate, DateTime endDate)
         {
             PowerlineSpecification spec = await GeneratePowerlineSpecification();
-            List<PowerlineLogData> log = await GenerateLogData(startDate, endDate, spec.length_km);
+            List<PowerlineLogData> log = await GeneratePowerlineLogData(startDate, endDate, spec.length_km);
             return new ComponentPowerline(spec, log);
         }
+        public static async Task<ComponentTransformer> GenerateTransformerComponent(DateTime startDate, DateTime endDate)
+        {
+            TransformerSpecification spec = await GenerateTransformerSpecification();
+            List<TransformerLogData> log = await GenerateTransformerLogData(startDate, endDate, spec.power_rating);
+            return new ComponentTransformer(spec, log);
+        }
 
-        private static async Task<List<PowerlineLogData>> GenerateLogData(DateTime start, DateTime end, double? length_km)
+        private static async Task<List<TransformerLogData>> GenerateTransformerLogData(DateTime startDate, DateTime endDate, double? power_rating)
+        {
+            string voltage_category = Categorize_Voltage(power_rating);
+            double numberofDays = (endDate - startDate).TotalDays;
+            Console.WriteLine($"startDate: " + startDate);
+            Console.WriteLine($"endDate: " + endDate);
+            Console.WriteLine($"number of days: " + numberofDays);
+
+            List<TransformerLogData> logBook = new List<TransformerLogData>();
+            DateTime logTime = startDate;
+
+            for (int i = 0; i < numberofDays; i++)
+            {
+                for (int j = 0; j < 24; j++)
+                {
+                    TransformerLogData hourLog = new TransformerLogData
+                    {
+                        timestamp = logTime,
+                        load_current = (double?)await GetRandomizedComponent("transformer", voltage_category, "loadcurrent"),
+                        temperature = (double?)await GetRandomizedComponent("transformer", voltage_category, "currenttemperature"),
+                        power_factor = (double?)await GetRandomizedComponent("transformer", voltage_category, "powerfactor"),
+                        active_power = (double?)await GetRandomizedComponent("transformer", voltage_category, "activepower"),
+                        reactive_power = (double?)await GetRandomizedComponent("transformer", voltage_category, "reactivepower"),
+                    };
+                    logTime += TimeSpan.FromHours(1);
+                    logBook.Add(hourLog);
+                }
+            }
+            return logBook;
+
+        }
+
+        private static async Task<List<PowerlineLogData>> GeneratePowerlineLogData(DateTime startDate, DateTime endDate, double? length_km)
         {
             string length_category = await Categorize_Length(length_km);
-            double numberofDays = (end-start).TotalDays;
-            Console.WriteLine($"startDate: "+start);
-            Console.WriteLine($"endDate: "+end);
+            double numberofDays = (endDate-startDate).TotalDays;
+            Console.WriteLine($"startDate: "+startDate);
+            Console.WriteLine($"endDate: "+endDate);
             Console.WriteLine($"number of days: "+numberofDays);
                 List<PowerlineLogData> logBook= new List<PowerlineLogData>();
             
-                DateTime logTime = start;
+                DateTime logTime = startDate;
             for (int i = 0; i < numberofDays; i++)
             {
                 for (int j = 0; j < 24; j++)
@@ -80,8 +129,8 @@ namespace powergrid_data_gen.Generator
                     PowerlineLogData hourLog = new PowerlineLogData
                     {
                         timestamp = logTime,
-                       line_voltage = (double?)await GetRandomizedComponent(length_category, "voltage"),
-                        power_capacity = (double?)await GetRandomizedComponent(length_category, "power")
+                       line_voltage = (double?)await GetRandomizedComponent("powerline", length_category, "voltage"),
+                        power_capacity = (double?)await GetRandomizedComponent("powerline", length_category, "power")
                     };
                     logTime += TimeSpan.FromHours(1);
                     logBook.Add(hourLog);
@@ -97,11 +146,11 @@ namespace powergrid_data_gen.Generator
             string? serial_number = await GenerateSerialNumber();
             double? length_km = _random.Next(40, 1000);
             string length_category = await Categorize_Length(length_km);
-            double? current_capacity = (double?)await GetRandomizedComponent(length_category, "currentcapacity");
-            int? max_operating_temperature = Convert.ToInt32(await GetRandomizedComponent(length_category, "maxoperatingtemperature"));
-            string? conductor_material = (string)await GetRandomizedComponent(length_category, "conductormaterial");
-            string? line_type = (string)await GetRandomizedComponent(length_category, "linetype");
-            string? insulation_type = (string)await GetRandomizedComponent(length_category, "insulationtype");
+            double? current_capacity = (double?)await GetRandomizedComponent("powerline",length_category, "currentcapacity");
+            int? max_operating_temperature = Convert.ToInt32(await GetRandomizedComponent("powerline", length_category, "maxoperatingtemperature"));
+            string? conductor_material = (string)await GetRandomizedComponent("powerline", length_category, "conductormaterial");
+            string? line_type = (string)await GetRandomizedComponent("powerline",length_category, "linetype");
+            string? insulation_type = (string)await GetRandomizedComponent("powerline", length_category, "insulationtype");
 
             PowerlineSpecification specData = new PowerlineSpecification
             {
@@ -116,7 +165,54 @@ namespace powergrid_data_gen.Generator
 
             return specData;
         }
-        
+        private static async Task<TransformerSpecification> GenerateTransformerSpecification()
+        {
+
+            string? serial_number = await GenerateSerialNumber();
+            double? power_rating = _random.Next(100, 1800);
+            string voltage_category = Categorize_Voltage(power_rating);
+            int ? primary_voltage = Convert.ToInt32(await GetRandomizedComponent("transformer", voltage_category, "primaryvoltage"));
+            int? secondary_voltage = await GetSecondaryVoltage(primary_voltage, voltage_category);
+            int frequency = frequency_level[_random.Next(0, 1)];
+            string? cooling_type = (string?)await GetRandomizedComponent("transformer", voltage_category, "coolingtype");
+            int? temperature_rise = Convert.ToInt32(await GetRandomizedComponent("transformer", voltage_category, "temperaturerise"));
+
+            TransformerSpecification specdata = new TransformerSpecification
+            {
+                component_id = serial_number,
+                power_rating = power_rating,
+                primary_voltage = primary_voltage,
+                secondary_voltage = secondary_voltage,
+                frequency = frequency,
+                cooling_type = cooling_type,
+                temperature_rise = temperature_rise
+            };
+            return specdata;
+        }
+
+        private static async Task<int?> GetSecondaryVoltage(int? primary_voltage, string voltage_category)
+        {
+            int? secondary_voltage = Convert.ToInt32(await GetRandomizedComponent("transformer", voltage_category, "secondaryvoltage"));
+            if (secondary_voltage >= primary_voltage) //ensures that secondary voltage is always below primary voltafe
+            {
+                secondary_voltage = primary_voltage-10;
+            }
+            return secondary_voltage;
+        }
+
+        private static string? Categorize_Voltage(double? power_rating)
+        {
+            if (power_rating <= 10)
+                return "low_voltage";
+            else if (power_rating <= 100)
+                return "medium_voltage";
+            else if (power_rating <= 500)
+                return "high_voltage";
+            else if (power_rating <= 1000)
+                return "extra_high_voltage";
+            else
+                return "ultra_ high_voltage";
+        }
 
         public static async Task<string> Categorize_Length(double? lineLength)
         {
@@ -142,34 +238,78 @@ namespace powergrid_data_gen.Generator
         
             return finalString;
         }
-        public static async Task<object> GetRandomizedComponent(string category, string param)
+        public static async Task<object> GetRandomizedComponent(string componentType, string category, string param)
         {
-
-            if (ComponentData.powerData.ContainsKey(category) && ComponentData.powerData[category].ContainsKey(param))
+            if (componentType == "transformer")
             {
-                return (object)await SeedData.GetDoubleResult(category, param);
 
+                if (ComponentData.transformerData.ContainsKey(category) && ComponentData.transformerData[category].ContainsKey(param))
+                {
+                    return (object)await SeedData.GetDoubleResult(category, param, componentType);
+
+                }
+
+                else if (ComponentData.textbasedTransformerData.ContainsKey(category) && ComponentData.textbasedTransformerData[category].ContainsKey(param))
+                {
+                    return (object)await SeedData.GetStringResult(category, param, componentType);
+                }
+                else
+                    return null; // Return null if the parameter isn't found
             }
-
-            else if (ComponentData.textbasedData.ContainsKey(param))
+            else if (componentType == "powerline")
             {
-                return (object)await SeedData.GetStringResult(param);
+
+                if (ComponentData.powerlineData.ContainsKey(category) && ComponentData.powerlineData[category].ContainsKey(param))
+                {
+                    return (object)await SeedData.GetDoubleResult(category, param, componentType);
+
+                }
+
+                else if (ComponentData.textbasedPowerlineData.ContainsKey(param))
+                {
+                    return (object)await SeedData.GetStringResult("", param, componentType);
+                }
+                else
+                    return null; // Return null if the parameter isn't found
             }
-            else 
-                return null; // Return null if the parameter isn't found
+            else
+                return null; // Return null if the componenttype isn't found
         }
 
-        public static async Task<string> GetStringResult(string param)
+        public static async Task<string> GetStringResult(string category,string param, string componentType)
         {
-            List<string> options = ComponentData.textbasedData[param].ToList();
+            List<string> options = new List<string>();
+            if (componentType == "transformer")
+            {
+                options = ComponentData.textbasedTransformerData[category][param].ToList();
+
+            }
+            else if (componentType == "powerline")
+            {
+                options = ComponentData.textbasedPowerlineData[param].ToList();
+
+            }
             int count = options.Count;
             return options[_random.Next(count - 1)];
         }
 
-        public static async Task<double?> GetDoubleResult(string category, string param)
+        public static async Task<double?> GetDoubleResult(string category, string param, string componentType)
         {
-            var range = ComponentData.powerData[category][param];
-            double? randResult = await GetRandomDouble(range.Min, range.Max);
+            double? randResult;
+            if (componentType == "transformer")
+            {
+               var range = ComponentData.transformerData[category][param];
+                randResult = await GetRandomDouble(range.Min, range.Max);
+            }
+            else if (componentType == "powerline")
+            {
+               var range = ComponentData.powerlineData[category][param];
+               randResult = await GetRandomDouble(range.Min, range.Max);
+            }
+            else
+                throw new ArgumentOutOfRangeException(nameof(componentType));
+           
+
             return randResult;
         }
 
