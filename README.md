@@ -3,16 +3,14 @@ When ran, it generates 3 LogObjects, each containing log start- and end dates, a
 
 Data is generated based on transformer power rating och power line length. Transformer has a wider span, may be altered in the future.
 
-Voltage categories:
-----------------------------------------------
-low_voltage           |                      |
-                      |                      |
-medium_voltage        |- Powerline span      |
-                      |                      |
-high_voltage          |                      |- Transformer span
------------------------                      |
-extra_high_voltage                           |
-                                             |
-ultra_high_voltage                           |
-----------------------------------------------
+
+Voltage categories
+------------------
+| Voltage span     | Transformer  |  Powerline  |
+|------------------| -------------|-------------|
+| low_voltage      | ✔             |    ✔         |
+| medium_voltage   | ✔             |    ✔     |
+|high_voltage      |       ✔        |      ✔       |
+|extra_high_voltage|      ✔         |     ❌        |
+|ultra_high_voltage|      ✔         |       ❌      |
 
